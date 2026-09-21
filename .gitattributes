@@ -1,0 +1,22 @@
+# Build files
+*.mk text
+*.mkd text
+*.bp text
+*.rc text
+*.prop text
+Android.bp text
+Android.mk text
+
+# Text config
+*.xml text
+*.yml text
+*.yaml text
+.gitattributes text
+.editorconfig text
+
+# Python
+*.py text
+
+# No eol normalization for binary-adjacent assets
+*.img binary
+*.png binary
