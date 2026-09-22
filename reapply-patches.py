@@ -162,8 +162,25 @@ def patch_kernel_modules(top):
         print(f"{f}: no changes needed")
 
 
+def patch_boot_jars_allowlist(top):
+    # oplus-fwk.jar (hardware/oplus) lands on the bootclasspath with
+    # package net.oneplus.odm, which check_boot_jars rejects unless the
+    # package is allow-listed.
+    f = os.path.join(top, "build/soong/scripts/check_boot_jars/package_allowed_list.txt")
+    if not os.path.exists(f):
+        print(f"{f}: not present, skip")
+        return
+    s = open(f).read()
+    if "net.oneplus.odm" not in s:
+        open(f, "a").write("net.oneplus.odm\n")
+        print(f"patched {f} (allow net.oneplus.odm)")
+    else:
+        print(f"{f}: no changes needed")
+
+
 if __name__ == "__main__":
     patch_bp(vendor_bp)
+    patch_boot_jars_allowlist(top)
     patch_kernel_modules(top)
     patch_vendor_mk(os.path.join(top, "vendor/oneplus/sm8450-common/sm8450-common-vendor.mk"))
     patch_common_ptxt(common_ptxt)
