@@ -46,8 +46,8 @@ macOS / Apple Silicon will *not* work (AOSP expects x86_64 Linux; 36 GB is too l
 |---|---|
 | **CPU** | 8 vCPU minimum, 16+ comfortable |
 | **RAM** | 32 GB minimum, 64 GB comfortable |
-| **Disk free** | **≥ 400 GB** — ~180 GB sources (`/root/lineage`) + ~60 GB `out/` |
-| **Build time** | ~1–2 h first build (ninja, 16 cores); incremental rebuilds far faster |
+| **Disk free** | **≥ 400 GB** — ~290 GB sources (`/root/lineage`) + ~115 GB `out/` (measured after a full build) |
+| **Build time** | ~1–2 h first build (ninja, 16 cores); measured on this server: full `bacon` ≈ 45 min with warm ccache, kernel ≈ 14 min; incremental rebuilds far faster |
 
 ### One-time dependencies
 
