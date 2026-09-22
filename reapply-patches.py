@@ -103,7 +103,22 @@ def patch_vendor_mk(path):
         print(f"{path}: no changes needed")
 
 
+def remove_euicc(top):
+    # hardware/oplus/Euicc (legacy OplusEuicc app) duplicates the mainline
+    # packages/apps/EuiccPolicy -> "MODULE.TARGET.ETC.hidden-api-whitelist-
+    # org.lineageos.euicc.xml already defined". OplusEuicc is not in any
+    # PRODUCT_PACKAGES, so removing the dir is safe.
+    import shutil
+    d = os.path.join(top, "hardware/oplus/Euicc")
+    if os.path.isdir(d):
+        shutil.rmtree(d)
+        print(f"removed {d} (legacy OplusEuicc duplicates mainline EuiccPolicy)")
+    else:
+        print(f"{d}: already absent")
+
+
 if __name__ == "__main__":
     patch_bp(vendor_bp)
     patch_vendor_mk(os.path.join(top, "vendor/oneplus/sm8450-common/sm8450-common-vendor.mk"))
     patch_common_ptxt(common_ptxt)
+    remove_euicc(top)

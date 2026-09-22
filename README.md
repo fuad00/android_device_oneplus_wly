@@ -92,6 +92,9 @@ cat > .repo/local_manifests/wly-local.xml <<'EOF'
 <manifest>
   <remote name="fuad00" fetch="https://github.com/fuad00" review="https://github.com"/>
   <project path="device/oneplus/wly" name="fuad00/android_device_oneplus_wly"/>
+  <project name="pjgowtham/android_kernel_oneplus_sm8450" path="kernel/oneplus/sm8450" revision="lineage-23.0"/>
+  <project name="pjgowtham/android_kernel_oneplus_sm8450-modules" path="kernel/oneplus/sm8450-modules" revision="lineage-23.0"/>
+  <project name="pjgowtham/android_kernel_oneplus_sm8450-devicetrees" path="kernel/oneplus/sm8450-devicetrees" revision="lineage-23.0"/>
 </manifest>
 EOF
 repo sync -c -j16
@@ -101,7 +104,11 @@ repo sync -c -j16
 #    device/oneplus/sm8450-common  <- pjgowtham/android_device_oneplus_sm8450-common lineage-23.0
 #    hardware/pixelworks           <- LineageOS/android_hardware_pixelworks_interfaces lineage-23.0
 #    hardware/oplus                <- pjgowtham/android_hardware_oplus lineage-23.0
-#        (has commondcs; LineageOS mainline lineage-23.0 also works)
+#        (has commondcs + oplus-multihal sensors; LineageOS mainline lacks the latter)
+#    kernel/oneplus/sm8450{,-modules,-devicetrees} <- pjgowtham, lineage-23.0
+#        (pinned in the local manifest above; BoardConfigKernel needs the kernel
+#         Makefile for TARGET_KERNEL_VERSION — without it ckati dies on
+#         vendor/lineage/build/tasks/kernel.mk: "Argument missing")
 
 # 3. Payload -> vendor blobs
 unzip -o -q stock/OOS_15.0.0.700_EU_NE2213.zip payload.bin
@@ -128,6 +135,12 @@ from scratch every run, which drops manual build fixes. The idempotent
   they are mutually exclusive)
 - `libwfdservice`: drop the explicit `android.media.audio.common.types-V2-cpp`
   dep (it collides with V4 pulled transitively; WFD/Miracast is non-critical)
+- `sm8450-common-vendor.mk`: drop `wfdservice` from `PRODUCT_PACKAGES` — it is a
+  32-bit prebuilt (`compile_multilib: "32"`) and does not register on this
+  64-bit-only product ("non-existent module in PRODUCT_PACKAGES")
+- remove `hardware/oplus/Euicc/` — the legacy `OplusEuicc` app duplicates the
+  mainline `packages/apps/EuiccPolicy` hidden-api-whitelist module; it is not in
+  any `PRODUCT_PACKAGES` so the dir can go
 
 Also, `device/oneplus/wly/BoardConfig.mk` sets `NEED_AIDL_NDK_PLATFORM_BACKEND
 := true` — required so prebuilt vendor AIDL libs (e.g. `libsecurity_event_dcs`)
