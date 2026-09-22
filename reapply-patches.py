@@ -56,6 +56,23 @@ def patch_bp(path):
         if "android.media.audio.common.types-V2-cpp" in block:
             block2 = block.replace('                "android.media.audio.common.types-V2-cpp",\n', "")
             s = s[:lm.end()] + block2 + s[close:]
+    # 3) libpwirissoft: DT_NEEDED vendor.pixelworks.hardware.display@1.1
+    #    is not covered by check_elf (HIDL lib built from source in
+    #    hardware/pixelworks). Disable the ELF check for this module
+    #    (check_elf_file's own suggestion).
+    iris = re.compile(
+        r'cc_prebuilt_library_shared \{\n    name: "libpwirissoft",')
+    im = iris.search(s)
+    if im:
+        close = s.find("\n}", im.end())
+        block = s[im.end():close]
+        if "check_elf_files: false," not in block:
+            block2 = block.replace(
+                '    strip: {\n        none: true,\n    },',
+                '    strip: {\n        none: true,\n    },\n    check_elf_files: false,', 1)
+            if block2 == block:
+                block2 = block + '\n    check_elf_files: false,'
+            s = s[:im.end()] + block2 + s[close:]
     if s != orig:
         open(path, "w").write(s)
         print(f"patched {path}")
