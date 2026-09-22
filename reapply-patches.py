@@ -114,13 +114,18 @@ def patch_vendor_mk(path):
         return
     s = open(path).read()
     orig = s
-    # wfdservice is a 32-bit prebuilt (compile_multilib "32"); on a
-    # 64-bit-only product the module doesn't register -> "non-existent
-    # module in PRODUCT_PACKAGES". WFD/Miracast is non-critical.
-    s, _ = re.subn(r"^\s*wfdservice \\\\", "", s, flags=re.M)
+    # WFD/Miracast stack is out of scope for this build:
+    #  - wfdservice is a 32-bit prebuilt that never registers on this
+    #    64-bit-only product ("non-existent module in PRODUCT_PACKAGES")
+    #  - the rest (libwfd*, wfd* services, WfdService/WfdCommon apps)
+    #    fails check_elf on stale surfaceflinger symbols.
+    # Each entry line carries its own trailing backslash, so deleting
+    # the whole line keeps the continuation chain intact. Idempotent.
+    pat = re.compile(r"^[ \t]*(?:lib)?[wW]fd[a-zA-Z0-9_]*[ \t]*\\\n", re.M)
+    s, n = pat.subn("", s)
     if s != orig:
         open(path, "w").write(s)
-        print(f"patched {path} (dropped wfdservice from product)")
+        print(f"patched {path} (dropped {n} WFD entries from product)")
     else:
         print(f"{path}: no changes needed")
 
