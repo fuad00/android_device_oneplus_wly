@@ -60,7 +60,22 @@ apt install openjdk-17-jdk git git-lfs curl rsync ccache wget unzip zip \
 
 (`golang-go` + `liblzma-dev` are for `payload-dumper-go`, which unpacks the stock OTA payload.)
 
-### Stock firmware input
+### Vendor blobs (no stock OTA needed)
+
+Pre-extracted proprietary blobs live in
+[`fuad00/proprietary_vendor_oneplus_wly`](https://github.com/fuad00/proprietary_vendor_oneplus_wly)
+(~1.9 GB, from OxygenOS 15.0.0.700 EU). `build.sh` clones it and lays out:
+
+```
+wly/proprietary/           -> vendor/oneplus/wly/proprietary
+sm8450-common/proprietary/ -> vendor/oneplus/sm8450-common/proprietary
+```
+
+then regenerates the per-device make/bp files with `setup-makefiles.py` and
+re-applies the build fixes with `reapply-patches.py`.
+
+### Stock firmware input (fallback)
+
 
 You need the **stock OxygenOS 15 full OTA payload** for NE2213 —
 `NE2213_15.0.0.700(EX01)` (EU). It is a ~5.7 GB `.zip` containing

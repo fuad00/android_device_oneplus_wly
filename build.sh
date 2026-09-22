@@ -70,8 +70,24 @@ for f in __import__("glob").glob(".repo/local_manifests/*.xml"):
 EOF
 repo sync -c -j16 kernel/oneplus/sm8450 kernel/oneplus/sm8450-modules kernel/oneplus/sm8450-devicetrees
 
-# ---- 2. Extract stock payload -> vendor blobs ------------------------------
-if [ ! -f "$STOCK/payload.bin" ] && [ -f "$STOCK/OOS_15.0.0.700_EU_NE2213.zip" ]; then
+# ---- 2. Vendor blobs --------------------------------------------------------
+# Preferred: pre-extracted blobs from the vendor repo (no stock OTA needed).
+# Fallback: extract from the stock OxygenOS 15 payload.
+VENDOR_REPO="https://github.com/fuad00/proprietary_vendor_oneplus_wly"
+if [ ! -d "$TOP/vendor/oneplus/wly/proprietary" ]; then
+  if [ -d /tmp/wly_vendor_repo/wly/proprietary ]; then
+    # already cloned below
+    :
+  else
+    git clone -q --depth 1 "$VENDOR_REPO" /tmp/wly_vendor_repo
+  fi
+  mkdir -p "$TOP/vendor/oneplus/wly" "$TOP/vendor/oneplus/sm8450-common"
+  cp -a /tmp/wly_vendor_repo/wly/proprietary "$TOP/vendor/oneplus/wly/proprietary"
+  cp -a /tmp/wly_vendor_repo/sm8450-common/proprietary "$TOP/vendor/oneplus/sm8450-common/proprietary"
+  # generate the per-device vendor make/bp files from the device trees
+  (cd "$TOP/device/oneplus/wly" && ./setup-makefiles.py "$TOP/vendor/oneplus/wly")
+  (cd "$TOP/device/oneplus/sm8450-common" && ./setup-makefiles.py "$TOP/vendor/oneplus/sm8450-common")
+elif [ ! -f "$STOCK/payload.bin" ] && [ -f "$STOCK/OOS_15.0.0.700_EU_NE2213.zip" ]; then
   cd "$STOCK"
   unzip -o -q OOS_15.0.0.700_EU_NE2213.zip payload.bin
   cd "$TOP"
