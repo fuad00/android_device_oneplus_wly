@@ -55,6 +55,21 @@ clone_tree https://github.com/LineageOS/android_hardware_pixelworks_interfaces l
 # which wly prebuilds). LineageOS mainline 23.0 also works.
 clone_tree https://github.com/pjgowtham/android_hardware_oplus lineage-23.0 hardware/oplus
 
+# Kernel trees (required: BoardConfigKernel reads kernel/oneplus/sm8450/Makefile
+# for TARGET_KERNEL_VERSION). Pin via local manifest + repo sync:
+python3 - <<'EOF'
+xml = """  <project name="pjgowtham/android_kernel_oneplus_sm8450" path="kernel/oneplus/sm8450" revision="lineage-23.0"/>
+  <project name="pjgowtham/android_kernel_oneplus_sm8450-modules" path="kernel/oneplus/sm8450-modules" revision="lineage-23.0"/>
+  <project name="pjgowtham/android_kernel_oneplus_sm8450-devicetrees" path="kernel/oneplus/sm8450-devicetrees" revision="lineage-23.0"/>
+"""
+for f in __import__("glob").glob(".repo/local_manifests/*.xml"):
+    s = open(f).read()
+    if 'path="kernel/oneplus/sm8450"' not in s:
+        s = s.replace("</manifest>", xml + "</manifest>")
+        open(f, "w").write(s)
+EOF
+repo sync -c -j16 kernel/oneplus/sm8450 kernel/oneplus/sm8450-modules kernel/oneplus/sm8450-devicetrees
+
 # ---- 2. Extract stock payload -> vendor blobs ------------------------------
 if [ ! -f "$STOCK/payload.bin" ] && [ -f "$STOCK/OOS_15.0.0.700_EU_NE2213.zip" ]; then
   cd "$STOCK"
