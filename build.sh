@@ -137,6 +137,13 @@ cd "$TOP/device/oneplus/wly"
 # Reapply the fixes extract-files.py regenerates away (idempotent)
 python3 reapply-patches.py "$TOP"
 
+# chmod 755 /root && chmod 666 /root/.repo_.gitconfig.json 2>/dev/null
+# (ckati runs sub-rules as `nobody` in a bwrap sandbox; the build-manifest.xml
+# rule calls `repo manifest` which wants to write /root/.repo_.gitconfig.json —
+# EROFS if /root is 700)
+chmod 755 /root 2>/dev/null
+chmod 666 /root/.repo_.gitconfig.json 2>/dev/null
+
 # ---- 4. Build ----------------------------------------------------------------
 cd "$TOP"
 source build/envsetup.sh
