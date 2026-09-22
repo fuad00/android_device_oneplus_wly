@@ -58,7 +58,7 @@ clone_tree https://github.com/pjgowtham/android_hardware_oplus lineage-23.0 hard
 # Kernel trees (required: BoardConfigKernel reads kernel/oneplus/sm8450/Makefile
 # for TARGET_KERNEL_VERSION). Pin via local manifest + repo sync:
 python3 - <<'EOF'
-xml = """  <project name="pjgowtham/android_kernel_oneplus_sm8450" path="kernel/oneplus/sm8450" revision="lineage-23.0"/>
+xml = """  <project name="fuad00/android_kernel_oneplus_sm8450" path="kernel/oneplus/sm8450" revision="wly-lineage-23.0"/>
   <project name="pjgowtham/android_kernel_oneplus_sm8450-modules" path="kernel/oneplus/sm8450-modules" revision="lineage-23.0"/>
   <project name="pjgowtham/android_kernel_oneplus_sm8450-devicetrees" path="kernel/oneplus/sm8450-devicetrees" revision="lineage-23.0"/>
 """
