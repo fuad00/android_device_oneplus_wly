@@ -56,13 +56,13 @@ def patch_bp(path):
         if "android.media.audio.common.types-V2-cpp" in block:
             block2 = block.replace('                "android.media.audio.common.types-V2-cpp",\n', "")
             s = s[:lm.end()] + block2 + s[close:]
-    # 3) Any prebuilt that links a vendor.pixelworks HIDL interface: those
-    #    HIDL libs are system_ext_specific, so soong filters them out of the
-    #    vendor module's shared_libs and check_elf_file then fails. Disable
-    #    the check (check_elf_file's own suggestion); linker namespaces
-    #    resolve it at runtime.
+    # 3) Any prebuilt (library or binary) that links a vendor.pixelworks
+    #    HIDL interface: those HIDL libs are system_ext_specific, so soong
+    #    filters them out of the vendor module's shared_libs and
+    #    check_elf_file then fails. Disable the check (check_elf_file's own
+    #    suggestion); linker namespaces resolve it at runtime.
     blocks = re.compile(
-        r'cc_prebuilt_library_shared \{\n    name: "[^"]+",.*?\n\}', re.S)
+        r'cc_prebuilt_(?:library_shared|binary) \{\n    name: "[^"]+",.*?\n\}', re.S)
     out = []
     last = 0
     for bm in blocks.finditer(s):

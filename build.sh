@@ -70,6 +70,20 @@ for f in __import__("glob").glob(".repo/local_manifests/*.xml"):
 EOF
 repo sync -c -j16 kernel/oneplus/sm8450 kernel/oneplus/sm8450-modules kernel/oneplus/sm8450-devicetrees
 
+# chromium-webview prebuilts: repo sync leaves LFS pointers (smudge --skip),
+# so webview.apk is a 134-byte pointer -> "failed opening zip: Invalid file".
+# Re-materialize via a throwaway clone with LFS smudge (only the 2 arches
+# this product needs; arm64 = target, x86_64 = host tooling fallback).
+for arch in arm64 x86_64; do
+  f="external/chromium-webview/prebuilt/$arch/webview.apk"
+  if [ "$(wc -c < "$TOP/$f" 2>/dev/null || echo 0)" -lt 1000 ]; then
+    (cd /tmp && rm -rf wv_$arch && git init -q wv_$arch && cd wv_$arch &&
+     git remote add origin "https://github.com/LineageOS/android_external_chromium-webview_prebuilt_${arch}.git" &&
+     git lfs install --force && git fetch -q --depth 1 origin main && git checkout -q FETCH_HEAD)
+    cp /tmp/wv_$arch/webview.apk "$TOP/$f"
+  fi
+done
+
 # ---- 2. Vendor blobs --------------------------------------------------------
 # Preferred: pre-extracted blobs from the vendor repo (no stock OTA needed).
 # Fallback: extract from the stock OxygenOS 15 payload.
