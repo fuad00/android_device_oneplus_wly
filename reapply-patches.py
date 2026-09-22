@@ -86,6 +86,24 @@ def patch_common_ptxt(path):
         print(f"{path}: no changes needed")
 
 
+def patch_vendor_mk(path):
+    if not os.path.exists(path):
+        print(f"{path}: not present, skip")
+        return
+    s = open(path).read()
+    orig = s
+    # wfdservice is a 32-bit prebuilt (compile_multilib "32"); on a
+    # 64-bit-only product the module doesn't register -> "non-existent
+    # module in PRODUCT_PACKAGES". WFD/Miracast is non-critical.
+    s, _ = re.subn(r"^\s*wfdservice \\\\", "", s, flags=re.M)
+    if s != orig:
+        open(path, "w").write(s)
+        print(f"patched {path} (dropped wfdservice from product)")
+    else:
+        print(f"{path}: no changes needed")
+
+
 if __name__ == "__main__":
     patch_bp(vendor_bp)
+    patch_vendor_mk(os.path.join(top, "vendor/oneplus/sm8450-common/sm8450-common-vendor.mk"))
     patch_common_ptxt(common_ptxt)
