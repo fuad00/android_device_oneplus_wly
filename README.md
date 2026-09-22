@@ -107,7 +107,7 @@ cat > .repo/local_manifests/wly-local.xml <<'EOF'
 <manifest>
   <remote name="fuad00" fetch="https://github.com/fuad00" review="https://github.com"/>
   <project path="device/oneplus/wly" name="fuad00/android_device_oneplus_wly"/>
-  <project name="pjgowtham/android_kernel_oneplus_sm8450" path="kernel/oneplus/sm8450" revision="lineage-23.0"/>
+  <project name="fuad00/android_kernel_oneplus_sm8450" path="kernel/oneplus/sm8450" revision="wly-lineage-23.0"/>
   <project name="pjgowtham/android_kernel_oneplus_sm8450-modules" path="kernel/oneplus/sm8450-modules" revision="lineage-23.0"/>
   <project name="pjgowtham/android_kernel_oneplus_sm8450-devicetrees" path="kernel/oneplus/sm8450-devicetrees" revision="lineage-23.0"/>
 </manifest>
