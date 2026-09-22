@@ -144,8 +144,27 @@ def remove_euicc(top):
         print(f"{d}: already absent")
 
 
+def patch_kernel_modules(top):
+    # cam_req_mgr_workq.c redefines struct sched_param, which 5.10
+    # include/linux/sched.h already defines -> "redefinition of 'sched_param'".
+    f = os.path.join(
+        top, "kernel/oneplus/sm8450-modules/qcom/opensource/camera-kernel/",
+        "drivers/cam_req_mgr/cam_req_mgr_workq.c")
+    if not os.path.exists(f):
+        print(f"{f}: not present, skip")
+        return
+    s = open(f).read()
+    dup = "struct sched_param {\n\tint sched_priority;\n};\n\n"
+    if dup in s:
+        open(f, "w").write(s.replace(dup, "", 1))
+        print(f"patched {f} (dropped duplicate struct sched_param)")
+    else:
+        print(f"{f}: no changes needed")
+
+
 if __name__ == "__main__":
     patch_bp(vendor_bp)
+    patch_kernel_modules(top)
     patch_vendor_mk(os.path.join(top, "vendor/oneplus/sm8450-common/sm8450-common-vendor.mk"))
     patch_common_ptxt(common_ptxt)
     remove_euicc(top)
