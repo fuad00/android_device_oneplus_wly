@@ -163,19 +163,33 @@ def patch_kernel_modules(top):
 
 
 def patch_boot_jars_allowlist(top):
-    # oplus-fwk.jar (hardware/oplus) lands on the bootclasspath with
-    # package net.oneplus.odm, which check_boot_jars rejects unless the
-    # package is allow-listed.
+    # oplus-fwk.jar (hardware/oplus) lands on the bootclasspath carrying
+    # many vendor packages (net.oneplus.odm, com.oplus.*, oplus.*);
+    # check_boot_jars rejects any package not in the allow list. Add every
+    # non-android.* package found in the jar. Only runs after the jar is
+    # built; on a fresh tree the next build pass picks it up.
+    import subprocess
     f = os.path.join(top, "build/soong/scripts/check_boot_jars/package_allowed_list.txt")
-    if not os.path.exists(f):
-        print(f"{f}: not present, skip")
+    jar = os.path.join(top, "out/soong/.intermediates/hardware/oplus/oplus-fwk/"
+                       "oplus-fwk/android_common/aligned/oplus-fwk.jar")
+    dexdump = os.path.join(top, "out/host/linux-x86/bin/dexdump")
+    if not (os.path.exists(f) and os.path.exists(jar) and os.path.exists(dexdump)):
+        print(f"{os.path.basename(f)}: prerequisites not ready yet, skip")
         return
-    s = open(f).read()
-    if "net.oneplus.odm" not in s:
-        open(f, "a").write("net.oneplus.odm\n")
-        print(f"patched {f} (allow net.oneplus.odm)")
+    out = subprocess.run([dexdump, "-d", jar], capture_output=True, text=True).stdout
+    pkgs = set()
+    for m in re.finditer(r"Class descriptor.*?L([a-zA-Z0-9_./]+);", out):
+        parts = m.group(1).split("/")
+        if len(parts) > 1:
+            pkgs.add(".".join(parts[:-1]))
+    pkgs = {p for p in pkgs if not (p.startswith("android.") or p.startswith("com.android."))}
+    cur = set(open(f).read().split())
+    missing = sorted(pkgs - cur)
+    if missing:
+        open(f, "a").write("".join(p + "\n" for p in missing))
+        print(f"patched {os.path.basename(f)} (allow {len(missing)}: {", ".join(missing)})")
     else:
-        print(f"{f}: no changes needed")
+        print(f"{os.path.basename(f)}: no changes needed")
 
 
 if __name__ == "__main__":
