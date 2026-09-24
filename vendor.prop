@@ -10,3 +10,8 @@ persist.radio.multisim.config=dsds
 
 # USB
 vendor.usb.product_string=OnePlus 10 Pro 5G
+
+# Biometrics
+# Fingerprint sensor is not supported on this device; keep the
+# biometrics framework from probing for (and crash-looping on) a HAL.
+ro.biometric.sensors=

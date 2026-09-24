@@ -1389,26 +1389,6 @@ vendor/firmware/evautil64.b07
 vendor/firmware/evautil64.b08
 vendor/firmware/evautil64.mdt
 
-# Fingerprint
-odm/bin/hw/vendor.oplus.hardware.biometrics.fingerprint@2.1-service
-odm/bin/init.oplus.fingerprints.sh
-odm/etc/init/vendor.oplus.hardware.biometrics.fingerprint@2.1-service.rc
-odm/etc/vintf/manifest/manifest_oplus_fingerprint.xml
-odm/lib64/hw/fingerprint.goodix_G7.default.so
-odm/lib64/anc.hal.so
-odm/lib64/libTeeClient.so
-odm/lib64/libgf_hal_G7.so
-odm/lib64/vendor.oplus.hardware.commondcs-V1-ndk_platform.so
-odm/vendor/firmware/goodixfp.b00
-odm/vendor/firmware/goodixfp.b01
-odm/vendor/firmware/goodixfp.b02
-odm/vendor/firmware/goodixfp.b03
-odm/vendor/firmware/goodixfp.b04
-odm/vendor/firmware/goodixfp.b05
-odm/vendor/firmware/goodixfp.b06
-odm/vendor/firmware/goodixfp.b07
-odm/vendor/firmware/goodixfp.mdt
-
 # Graphics (Adreno firmware)
 vendor/firmware/a730_sqe.fw
 vendor/firmware/a730_zap.b00
@@ -1449,7 +1429,6 @@ odm/etc/inparm/irissoft/mcfCheck.txt
 odm/etc/inparm/irissoft/mcfCheck_low.txt
 odm/etc/irissoft.fw
 odm/etc/irissoft_oplus.xml
-odm/etc/irissoft_samsung_S6E3HC3_dsc_cmd_mode_panel.fw|eba04e983c770eeacb81746eb32ab1785396f645
 odm/etc/irissoft_samsung_S6E3HC3_dsc_cmd_mode_panel.xml
 
 # NFC
