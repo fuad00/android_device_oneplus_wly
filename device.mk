@@ -91,3 +91,8 @@ $(call inherit-product, device/oneplus/sm8450-common/common.mk)
 
 # Inherit from the proprietary files makefile.
 $(call inherit-product, vendor/oneplus/wly/wly-vendor.mk)
+
+# Optional private branding (overlays, names): $(CUSTOM_BRANDING_DIR)/config/branding.mk
+ifneq ($(CUSTOM_BRANDING_DIR),)
+$(call inherit-product-if-exists, $(CUSTOM_BRANDING_DIR)/config/branding.mk)
+endif

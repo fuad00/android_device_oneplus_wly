@@ -26,3 +26,8 @@ TARGET_RECOVERY_UI_MARGIN_HEIGHT := 126
 
 # Include the proprietary files BoardConfig.
 include vendor/oneplus/wly/BoardConfigVendor.mk
+
+# Optional private branding (boot animation, props): $(CUSTOM_BRANDING_DIR)/config/BoardConfigBranding.mk
+ifneq ($(CUSTOM_BRANDING_DIR),)
+-include $(CUSTOM_BRANDING_DIR)/config/BoardConfigBranding.mk
+endif
