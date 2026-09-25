@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- Vendor fingerprint acquired messages, indexed by vendorCode
+         (Goodix HAL: 1 = duplicate area, 2 = duplicate finger) -->
+    <string-array name="fingerprint_acquired_vendor">
+        <item></item>
+        <item>Move your finger slightly between touches</item>
+        <item>This fingerprint is already enrolled</item>
+    </string-array>
+</resources>
