@@ -11,6 +11,8 @@ DEVICE_PATH := device/oneplus/wly
 
 # Kernel
 TARGET_KERNEL_CONFIG += vendor/wly.config
+# Soong runs the kernel build in a sandbox (nobody@android-build), pass the author explicitly
+TARGET_KERNEL_ADDITIONAL_FLAGS += KBUILD_BUILD_USER=fuad00 KBUILD_BUILD_HOST=fuad00-lineage
 
 # HIDL
 DEVICE_MANIFEST_FILE += $(DEVICE_PATH)/manifest.xml
