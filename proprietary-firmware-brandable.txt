@@ -1,0 +1,8 @@
+## Firmware images that private branding may replace: the vendor tree leaves an image out when
+## $(CUSTOM_BRANDING_DIR)/firmware/wly/<image> exists (extract-files.py,
+## BrandableFirmwareProprietaryFile).
+## All proprietary files from this list, unless pinned and noted otherwise,
+## are from OnePlus 10 Pro 5G (NE2213_15.0.0.901(EX01)).
+
+# Boot logo shown by UEFI (OPPO "SPLASH LOGO!" image, not signed)
+splash.img;AB

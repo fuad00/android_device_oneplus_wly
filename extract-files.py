@@ -17,6 +17,15 @@ from extract_utils.main import (
     ExtractUtils,
     ExtractUtilsModule,
 )
+from extract_utils.makefiles import (
+    write_mk_firmware_ab_partitions,
+    write_mk_firmware_file,
+    write_mk_guard_begin,
+    write_mk_guard_end,
+)
+from extract_utils.module import (
+    FirmwareProprietaryFile,
+)
 from extract_utils.tools import (
     llvm_objdump_path,
 )
@@ -201,6 +210,37 @@ blob_fixups: blob_fixups_user_type = {
         .replace_needed('vendor.oplus.hardware.urcc-V1-ndk_platform.so', 'vendor.oplus.hardware.urcc-V1-ndk.so'),
 }  # fmt: skip
 
+
+class BrandableFirmwareProprietaryFile(FirmwareProprietaryFile):
+    """Firmware images that private branding (CUSTOM_BRANDING_DIR, see BoardConfig.mk) may
+    replace: an image is only added from the vendor tree when
+    $(CUSTOM_BRANDING_DIR)/firmware/<device>/<image> does not exist, the branding repo then adds
+    its own. The images stay A/B OTA partitions either way."""
+
+    def write_makefiles(self, module, ctx):
+        write_mk_firmware_ab_partitions(
+            self.file_list.all_files,
+            ctx.board_config_mk_out,
+        )
+
+        write_mk_guard_begin('TARGET_DEVICE', module.device, ctx.mk_out)
+
+        for file in self.file_list.all_files:
+            custom = f'$(CUSTOM_BRANDING_DIR)/firmware/{module.device}/{file.dst}'
+            ctx.mk_out.write(
+                f'\nifeq ($(if $(CUSTOM_BRANDING_DIR),$(wildcard {custom})),)'
+            )
+            write_mk_firmware_file(
+                module.vendor_path,
+                self.vendor_rel_sub_path,
+                file,
+                ctx.mk_out,
+            )
+            write_mk_guard_end(ctx.mk_out)
+
+        write_mk_guard_end(ctx.mk_out)
+
+
 module = ExtractUtilsModule(
     'wly',
     'oneplus',
@@ -208,6 +248,11 @@ module = ExtractUtilsModule(
     blob_fixups=blob_fixups,
     lib_fixups=lib_fixups,
     add_firmware_proprietary_file=True,
+)
+module.proprietary_files.append(
+    BrandableFirmwareProprietaryFile(
+        module.proprietary_file_path('proprietary-firmware-brandable.txt')
+    )
 )
 
 if __name__ == '__main__':
